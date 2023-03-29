@@ -1,0 +1,131 @@
+from tkinter import *
+from PIL import Image,ImageTk
+import math
+
+COORD_ORIGINE = [200,200]
+
+class Tortue :
+   def __init__(self) :
+      self.angle = (270 % 360)  # en degre
+
+      self.vitesse = 1
+      self.trace = True
+      self.coord = COORD_ORIGINE
+      self.changerCouleur("0,0,0") # noir
+
+      #self.dessin = canvas.create_oval(195,195,205,205, outline="green", fill="green")
+      #self.dessin = canvas.create_polygon(200,195, 205,210, 195,210, outline="green", fill="green")
+
+   def image(self, canvas) :
+      self.canvas = canvas
+
+      self.imageAngle = (360 % 360)
+
+      self.imageDebut = Image.open("tortue.png")
+      redim_image= self.imageDebut.resize((30,30))
+      self.imageFin= ImageTk.PhotoImage(redim_image)
+
+      self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+
+   def restaurer(self) :
+      self.canvas.delete("all")
+
+      self.angle = (270 % 360)
+      self.imageAngle = (360 % 360)
+      self.coord = [200,200]
+      self.trace = True
+
+      self.image(self.canvas)
+
+   def nettoyer(self) :
+      self.canvas.delete("all")
+      self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+
+   def origine(self) :
+      self.canvas.delete(self.dessinImage)
+
+      redim_image= self.imageDebut.resize((30,30))
+      self.imageFin= ImageTk.PhotoImage(redim_image)
+
+      self.angle = (270 % 360)
+      self.imageAngle = (360 % 360)
+      self.coord = COORD_ORIGINE
+
+      self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+
+   def avancer(self, compteur, n, debut):
+      angle_radian = self.angle * math.pi / 180
+
+      self.canvas.move(self.dessinImage, self.vitesse * math.cos(angle_radian), self.vitesse * math.sin(angle_radian))
+
+      ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
+
+      if compteur != n :
+         self.canvas.after(30, self.avancer, compteur+1, n, debut)
+         self.coord = self.canvas.coords(self.dessinImage)
+
+         if self.trace :
+            self.canvas.coords(ligne, debut[0], debut[1], 
+               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+
+      '''else :      
+         self.canvas.create_line(self.coord[0], self.coord[1], self.coord[0] + 30, self.coord[1] +30)'''
+
+   def reculer(self, compteur, n, debut):
+      angle_radian = self.angle * math.pi / 180
+
+      self.canvas.move(self.dessinImage, -self.vitesse * math.cos(angle_radian), -self.vitesse * math.sin(angle_radian))
+      
+      ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
+
+      if compteur != n :
+         self.canvas.after(30, self.reculer, compteur+1, n, debut)
+         self.coord = self.canvas.coords(self.dessinImage)
+         
+         if self.trace :
+            self.canvas.coords(ligne, debut[0], debut[1], 
+               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+
+   def tourner(self, n) :
+      
+      if n != 0 :
+         if (-n) > 0 :
+            self.angle = ((self.angle - 1) % 360)
+            self.imageAngle = ((self.imageAngle + 1) % 360)
+         else :
+            self.angle = ((self.angle + 1) % 360)
+            self.imageAngle = ((self.imageAngle - 1) % 360)
+
+         self.canvas.delete(self.dessinImage)
+         rotated_image = self.imageDebut.rotate(self.imageAngle, expand=True)
+         redim_image = rotated_image.resize((30,30))
+         self.imageFin = ImageTk.PhotoImage(redim_image)
+         self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+         
+         if n > 0 :
+            self.canvas.after(30, self.tourner, n-1)
+         else :
+            self.canvas.after(30, self.tourner, n+1)
+
+   def leverCrayon(self) :
+      self.trace = False
+
+   def baisserCrayon(self) :
+      self.trace = True
+
+   def changerCouleur(self, rgb) :
+      
+      rgb.replace(" ", "")
+      r, g, b = rgb.split(",")
+
+      self.couleur = f'#{int(r):02x}{int(g):02x}{int(b):02x}'
+
+   def fixerPos(self, coord) :
+      self.canvas.delete(self.dessinImage)
+
+      coord.replace(" ", "")
+      x, y= coord.split(",")
+
+      self.coord = [int(x), int(y)]
+
+      self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
