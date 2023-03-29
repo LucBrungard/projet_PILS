@@ -124,7 +124,7 @@ class CommandWithParameter(Command):
 
 
 class Forward(CommandWithParameter):
-   def __init__(self, n) -> None:
+   def __init__(self, n=50) -> None:
       super().__init__(n)
 
    def visualize(self, visitor):
@@ -140,7 +140,7 @@ class Forward(CommandWithParameter):
 
 
 class Backward(CommandWithParameter):
-   def __init__(self, n) -> None:
+   def __init__(self, n=50) -> None:
       super().__init__(n)
 
    def visualize(self, visitor):
@@ -156,7 +156,7 @@ class Backward(CommandWithParameter):
 
 
 class TurnLeft(CommandWithParameter):
-   def __init__(self, n) -> None:
+   def __init__(self, n=90) -> None:
       super().__init__(n)
 
    def visualize(self, visitor):
@@ -172,7 +172,7 @@ class TurnLeft(CommandWithParameter):
 
 
 class TurnRight(CommandWithParameter):
-   def __init__(self, n) -> None:
+   def __init__(self, n=90) -> None:
       super().__init__(n)
 
    def visualize(self, visitor):
