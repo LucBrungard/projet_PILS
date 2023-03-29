@@ -1,12 +1,16 @@
 from tkinter import *
+from thread import ThreadedClient
 from tortue import Tortue
-from interface import Interface
-
-interface = Interface()
+from interfaceC import InterfaceC
 
 tortue = Tortue()
-tortue.image(interface.dessin)
+fenetreVisu = Tk()
 
-interface.boutons(tortue)
+client = ThreadedClient(fenetreVisu, tortue)
 
-interface.fenetre.mainloop()
+tortue.image(client.gui.interface.dessin)
+
+interfaceCommand = InterfaceC()
+
+fenetreVisu.mainloop()
+interfaceCommand.fenetre.mainloop()

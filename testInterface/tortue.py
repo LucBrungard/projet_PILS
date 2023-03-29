@@ -11,7 +11,7 @@ class Tortue :
       self.vitesse = 1
       self.trace = True
       self.coord = COORD_ORIGINE
-      self.changerCouleur("0,0,0") # noir
+      self.changerCouleur([0,0,0]) # noir
 
       #self.dessin = canvas.create_oval(195,195,205,205, outline="green", fill="green")
       #self.dessin = canvas.create_polygon(200,195, 205,210, 195,210, outline="green", fill="green")
@@ -114,18 +114,14 @@ class Tortue :
       self.trace = True
 
    def changerCouleur(self, rgb) :
-      
-      rgb.replace(" ", "")
-      r, g, b = rgb.split(",")
+      try :
+         r, g, b = rgb[0], rgb[1], rgb[2]
+      except :
+         print("Pas assez d'arguments")
 
-      self.couleur = f'#{int(r):02x}{int(g):02x}{int(b):02x}'
+      self.couleur = f'#{r:02x}{g:02x}{b:02x}'
 
    def fixerPos(self, coord) :
       self.canvas.delete(self.dessinImage)
-
-      coord.replace(" ", "")
-      x, y= coord.split(",")
-
-      self.coord = [int(x), int(y)]
-
+      self.coord = coord
       self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
