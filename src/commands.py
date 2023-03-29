@@ -1,25 +1,50 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
+from tkinter import *
+
+##################################################
+############ COMMAND WITHOUT PARAMETER ###########
+##################################################
+
 
 class Command(ABC):
+   """Abstract class to describe a command"""
+
    def __init__(self) -> None:
       super().__init__()
       self.name = self.__class__.__name__
 
    @abstractmethod
-   def save(self, visitor):
+   def save(self, visitor: VisitorSave) -> str:
+      """Return the textual representation of the command to be saved
+
+      Args:
+          visitor (VisitorSave): A visitor
+
+      Raises:
+          TypeError: If the visitor is not a subtype of VisitorSave
+      """
       if (not isinstance(visitor, VisitorSave)):
          raise TypeError()
-      pass
 
    @abstractmethod
-   def visualize(self, visitor):
+   def visualize(self, visitor: VisitorVisualize) -> None | Frame:
+      """Draw the graphical representation of a command
+
+      Args:
+          visitor (VisitorVisualize): A visitor
+
+      Raises:
+          TypeError: If the visitor is not a subtype of VisitorVisualize
+      """
       if (not isinstance(visitor, VisitorVisualize)):
          raise TypeError()
-      pass
 
    @abstractmethod
-   def toLOGO(self):
+   def toLogo(self) -> str:
+      """Return the textual representation of the command to be sent on ivy bus"""
       pass
+
 
 class LiftPencil(Command):
    def save(self, visitor):
@@ -27,21 +52,25 @@ class LiftPencil(Command):
       return visitor.visitLiftPencil(self)
 
    def visualize(self, visitor):
-      pass
+      super().visualize(visitor)
+      return visitor.visitLiftPencil(self)
 
-   def toLOGO(self):
+   def toLogo(self):
       return "LEVECRAYON"
+
 
 class LowerPencil(Command):
    def save(self, visitor):
       super().save(visitor)
       return visitor.visitLowerPencil(self)
-   
-   def visualize(self, visitor):
-      pass
 
-   def toLOGO(self):
+   def visualize(self, visitor):
+      super().visualize(visitor)
+      return visitor.visitLowerPencil(self)
+
+   def toLogo(self):
       return "BAISSECRAYON"
+
 
 class Origin(Command):
    def save(self, visitor):
@@ -49,10 +78,12 @@ class Origin(Command):
       return visitor.visitOrigin(self)
 
    def visualize(self, visitor):
-      pass
+      super().visualize(visitor)
+      return visitor.visitOrigin(self)
 
-   def toLOGO(self):
+   def toLogo(self):
       return "ORIGINE"
+
 
 class Restore(Command):
    def save(self, visitor):
@@ -60,10 +91,12 @@ class Restore(Command):
       return visitor.visitRestore(self)
 
    def visualize(self, visitor):
-      pass
+      super().visualize(visitor)
+      return visitor.visitRestore(self)
 
-   def toLOGO(self):
+   def toLogo(self):
       return "RESTAURE"
+
 
 class Clean(Command):
    def save(self, visitor):
@@ -71,74 +104,97 @@ class Clean(Command):
       return visitor.visitClean(self)
 
    def visualize(self, visitor):
-      pass
+      super().visualize(visitor)
+      return visitor.visitClean(self)
 
-   def toLOGO(self):
+   def toLogo(self) -> str:
       return "NETTOIE"
 
+##################################################
+############   COMMAND WITH PARAMETER  ###########
+##################################################
+
+
 class CommandWithParameter(Command):
+   """Abstract class. Represent the commands with a parameter"""
+
    def __init__(self, n) -> None:
       super().__init__()
       self.n = n
 
+
 class Forward(CommandWithParameter):
    def __init__(self, n) -> None:
       super().__init__(n)
-   
-   def visualize(self, visitorVisualize):
-      pass # TODO
+
+   def visualize(self, visitor):
+      super().visualize(visitor)
+      return visitor.visitForward(self)
 
    def save(self, visitor):
       super().save(visitor)
       return visitor.visitForward(self)
 
-   def toLOGO(self):
-      return f"AVANCER {self.n}"
+   def toLogo(self) -> str:
+      return f"AVANCE {self.n}"
+
 
 class Backward(CommandWithParameter):
    def __init__(self, n) -> None:
       super().__init__(n)
 
-   def visualize(self, visitorVisualize):
-      super().visualize(visitorVisualize)
+   def visualize(self, visitor):
+      super().visualize(visitor)
+      return visitor.visitBackward(self)
 
    def save(self, visitor):
       super().save(visitor)
       return visitor.visitBackward(self)
 
-   def toLOGO(self):
-      return f"RECULER {self.n}"
+   def toLogo(self) -> str:
+      return f"RECULE {self.n}"
+
 
 class TurnLeft(CommandWithParameter):
    def __init__(self, n) -> None:
       super().__init__(n)
 
-   def visualize(self, visitorVisualize):
-      super().visualize(visitorVisualize)
+   def visualize(self, visitor):
+      super().visualize(visitor)
+      return visitor.visitTurnLeft(self)
 
    def save(self, visitor):
       super().save(visitor)
       return visitor.visitTurnLeft(self)
 
-   def toLOGO(self):
-      return f"TOURNERGAUCHE {self.n}"
+   def toLogo(self) -> str:
+      return f"TOURNEGAUCHE {self.n}"
+
 
 class TurnRight(CommandWithParameter):
    def __init__(self, n) -> None:
       super().__init__(n)
 
-   def visualize(self, visitorVisualize):
-      super().visualize(visitorVisualize)
+   def visualize(self, visitor):
+      super().visualize(visitor)
+      return visitor.visitTurnRight(self)
 
    def save(self, visitor):
       super().save(visitor)
       return visitor.visitTurnRight(self)
 
-   def toLOGO(self):
-      return f"TOURNERDROITE {self.n}"
+   def toLogo(self) -> str:
+      return f"TOURNEDROITE {self.n}"
+
+##################################################
+############        VISITORS           ###########
+##################################################
 
 
-class VisitorCommands:
+class VisitorCommands(ABC):
+   """Abstract class. A visitor to handle each command interaction
+   """
+
    @abstractmethod
    def visitForward(self, command: Forward):
       if (not isinstance(command, Forward)):
@@ -184,10 +240,18 @@ class VisitorCommands:
       if (not isinstance(command, Clean)):
          raise TypeError()
 
+
+##################################################
+############      VISITORS  SAVE       ###########
+##################################################
 class VisitorSave(VisitorCommands):
+   """Abstract class. A visitor to save commands as text."""
    pass
 
+
 class VisitorSaveXML(VisitorSave):
+   """Concrete class. A visitor to save commands as XML text."""
+
    def visitForward(self, command):
       super().visitForward(command)
       return f"<avancer dist={command.n}>"
@@ -224,77 +288,155 @@ class VisitorSaveXML(VisitorSave):
       super().visitClean(command)
       return "<nettoyer>"
 
+
+##################################################
+############    VISITORS VISUALIZER    ###########
+##################################################
+
 class VisitorVisualize(VisitorCommands):
+   """Abstract class. A visitor to draw commands"""
+
+   def __init__(self, parent: Toplevel) -> None:
+      """Constructor
+
+      Args:
+          parent (TopLevel): The main window
+      """
+      super().__init__()
+      self.parent = parent
+
+
+class VisitorEditorVisualiser(VisitorVisualize):
+   """Concrete class. A visitor to draw graphical commands' representation on user's editor"""
+
+   def __init__(self, parent: Toplevel) -> None:
+      """Constructor
+
+      Args:
+          parent (TopLevel): The main window
+      """
+      super().__init__()
+      self.parent = parent
+
+   def visitForward(self, command: Forward):
+      super().visitForward(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Avancer de ")
+      label.grid(row=0, column=0)
+
+      entry = Entry(frame, width=5, justify=CENTER)
+      entry.insert(0, command.n)
+      entry.grid(row=0, column=1)
+
+      label = Label(frame, text=" pas")
+      label.grid(row=0, column=2)
+
+      return frame
+
+   def visitBackward(self, command: Backward):
+      super().visitBackward(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Reculer de ")
+      label.grid(row=0, column=0)
+
+      entry = Entry(frame, width=5, justify=CENTER)
+      entry.insert(0, command.n)
+      entry.grid(row=0, column=1)
+
+      label = Label(frame, text=" pas")
+      label.grid(row=0, column=2)
+
+      return frame
+
+   def visitTurnLeft(self, command: TurnLeft):
+      super().visitTurnLeft(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Rotation gauche de ")
+      label.grid(row=0, column=0)
+
+      entry = Entry(frame, width=5, justify=CENTER)
+      entry.insert(0, command.n)
+      entry.grid(row=0, column=1)
+
+      label = Label(frame, text=" degrés")
+      label.grid(row=0, column=2)
+
+      return frame
+
+   def visitTurnRight(self, command: TurnRight):
+      super().visitTurnRight(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Rotation droite de ")
+      label.grid(row=0, column=0)
+
+      entry = Entry(frame, width=5, justify=CENTER)
+      entry.insert(0, command.n)
+      entry.grid(row=0, column=1)
+
+      label = Label(frame, text=" degrés")
+      label.grid(row=0, column=2)
+
+      return frame
+
+   def visitLiftPencil(self, command: LiftPencil):
+      super().visitLiftPencil(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Lever le crayon", anchor='w')
+      label.pack()
+
+      return frame
+
+   def visitLowerPencil(self, command: LowerPencil):
+      super().visitLowerPencil(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Baisser le crayon")
+      label.pack()
+
+      return frame
+
+   def visitOrigin(self, command: Origin):
+      super().visitOrigin(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Retour au centre")
+      label.pack()
+
+      return frame
+
+   def visitRestore(self, command: Restore):
+      super().visitRestore(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Réinitialisation")
+      label.pack()
+
+      return frame
+
+   def visitClean(self, command: Clean):
+      super().visitClean(command)
+      frame = Frame(self.parent, bd=2, relief=RAISED)
+
+      label = Label(frame, text="Effacer les traces")
+      label.pack()
+
+      return frame
+
+
+class VisitorVisualizer(VisitorVisualize):
+   """Abstract class. A visitor to draw commands on a visualizer"""
+
+   # TODO faire que les visualiseurs ne puissent pas appeler la commande boucle
+
+
+class VisitorTextualVisualizer(VisitorVisualizer):
    pass
 
 
-if __name__ == "__main__":
-   print("Test class Command")
-   try:
-      command = Command()
-      raise SyntaxError("Class command should not be instanciated")
-   except TypeError as e:
-      print("Works fine !\n")
-
-   print("Test class CommandWithParameter")
-   try:
-      command = CommandWithParameter()
-      raise SyntaxError("Class CommandWithParameter should not be instanciated")
-   except TypeError as e:
-      print("Works fine !\n")
-
-   visitorSaveXML = VisitorSaveXML()
-
-   print("Test class Forward")
-   command = Forward(50)
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class Backward")
-   command = Backward(50)
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class TurnLeft")
-   command = TurnLeft(50)
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class TurnRight")
-   command = TurnRight(50)
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class LiftPencil")
-   command = LiftPencil()
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class LowerPencil")
-   command = LowerPencil()
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class Origin")
-   command = Origin()
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class Restore")
-   command = Restore()
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
-
-   print("Test class Clean")
-   command = Clean()
-   print(command.save(visitorSaveXML))
-   print(command.toLOGO())
-   print()
+class VisitorGraphicalVisualizer(VisitorVisualizer):
+   pass
