@@ -5,12 +5,14 @@ from interfaceC import InterfaceC
 
 tortue = Tortue()
 fenetreVisu = Tk()
+fenetreVisu.title("VisuLOGO")
 
 client = ThreadedClient(fenetreVisu, tortue)
 
-tortue.image(client.gui.interface.dessin)
+tortue.image(client.gui.interfaceV.dessin)
 
 interfaceCommand = InterfaceC()
 
 fenetreVisu.mainloop()
+client.gui.interfaceT.mainloop()
 interfaceCommand.fenetre.mainloop()

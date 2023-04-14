@@ -2,7 +2,7 @@ from tkinter import *
 from PIL import Image,ImageTk
 import math
 
-COORD_ORIGINE = [200,200]
+COORD_ORIGINE = [300,300]
 
 class Tortue :
    def __init__(self) :

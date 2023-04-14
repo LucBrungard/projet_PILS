@@ -49,3 +49,16 @@ class InterfaceC :
 
         fp_btn = Button(self.fenetre, text = 'FCC', command=lambda:self.ivybus.send_msg("FCC " + saisi.get()))
         fp_btn.grid(column=3, row=5)
+
+
+
+        act_btn = Button(self.fenetre, text = 'ACTION', command=lambda:self.ivybus.send_msg("ACTION"))
+        act_btn.grid(column=2, row=6)
+
+        quit_btn = Button(self.fenetre, text = 'QUITTER', command=self.quitter)
+        quit_btn.grid(column=2, row=7)
+
+    def quitter(self) :
+        self.fenetre.destroy()
+        self.ivybus.send_msg("QUITTER")
+        self.ivybus.stop()
