@@ -315,115 +315,136 @@ class VisitorEditorVisualiser(VisitorVisualize):
       Args:
           parent (TopLevel): The main window
       """
-      super().__init__()
-      self.parent = parent
+      super().__init__(parent)
+
+   def updateValue(self, command: CommandWithParameter, stringVar: StringVar):
+      try:
+         command.n = int(stringVar.get())
+      except ValueError:
+         command.n = 0
 
    def visitForward(self, command: Forward):
       super().visitForward(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
+      frame.columnconfigure((0, 1, 2), weight=1)
 
       label = Label(frame, text="Avancer de ")
-      label.grid(row=0, column=0)
+      label.grid(row=0, column=0, sticky="nswe")
 
-      entry = Entry(frame, width=5, justify=CENTER)
+      stringVar = StringVar()
+      stringVar.trace("w", lambda a, b, c,
+                      sv=stringVar: self.updateValue(command, sv))
+      entry = Entry(frame, width=5, justify=CENTER, textvariable=stringVar)
       entry.insert(0, command.n)
-      entry.grid(row=0, column=1)
+      entry.grid(row=0, column=1, sticky="nswe")
 
       label = Label(frame, text=" pas")
-      label.grid(row=0, column=2)
+      label.grid(row=0, column=2, sticky="nswe")
 
       return frame
 
    def visitBackward(self, command: Backward):
       super().visitBackward(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
+      frame.columnconfigure((0, 1, 2), weight=1)
 
       label = Label(frame, text="Reculer de ")
-      label.grid(row=0, column=0)
+      label.grid(row=0, column=0, sticky="nswe")
 
-      entry = Entry(frame, width=5, justify=CENTER)
+      stringVar = StringVar()
+      stringVar.trace("w", lambda a, b, c,
+                      sv=stringVar: self.updateValue(command, sv))
+      entry = Entry(frame, width=5, justify=CENTER, textvariable=stringVar)
       entry.insert(0, command.n)
-      entry.grid(row=0, column=1)
+      entry.grid(row=0, column=1, sticky="nswe")
 
       label = Label(frame, text=" pas")
-      label.grid(row=0, column=2)
+      label.grid(row=0, column=2, sticky="nswe")
 
       return frame
 
    def visitTurnLeft(self, command: TurnLeft):
       super().visitTurnLeft(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
+      frame.columnconfigure((0, 1, 2), weight=1)
 
       label = Label(frame, text="Rotation gauche de ")
-      label.grid(row=0, column=0)
+      label.grid(row=0, column=0, sticky="nswe")
 
-      entry = Entry(frame, width=5, justify=CENTER)
+      stringVar = StringVar()
+      stringVar.trace("w", lambda a, b, c,
+                      sv=stringVar: self.updateValue(command, sv))
+      entry = Entry(frame, width=5, justify=CENTER, textvariable=stringVar)
       entry.insert(0, command.n)
-      entry.grid(row=0, column=1)
+      entry.grid(row=0, column=1, sticky="nswe")
 
       label = Label(frame, text=" degrés")
-      label.grid(row=0, column=2)
+      label.grid(row=0, column=2, sticky="nswe")
 
       return frame
 
    def visitTurnRight(self, command: TurnRight):
       super().visitTurnRight(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
+      frame.columnconfigure((0, 1, 2), weight=1)
 
       label = Label(frame, text="Rotation droite de ")
-      label.grid(row=0, column=0)
+      label.grid(row=0, column=0, sticky="nswe")
 
-      entry = Entry(frame, width=5, justify=CENTER)
+      stringVar = StringVar()
+      stringVar.trace("w", lambda a, b, c,
+                      sv=stringVar: self.updateValue(command, sv))
+      entry = Entry(frame, width=5, justify=CENTER, textvariable=stringVar)
       entry.insert(0, command.n)
-      entry.grid(row=0, column=1)
+      entry.grid(row=0, column=1, sticky="nswe")
 
       label = Label(frame, text=" degrés")
-      label.grid(row=0, column=2)
+      label.grid(row=0, column=2, sticky="nswe")
 
       return frame
 
    def visitLiftPencil(self, command: LiftPencil):
       super().visitLiftPencil(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
 
-      label = Label(frame, text="Lever le crayon", anchor='w')
-      label.pack()
+      label = Label(frame, text="Lever le crayon")
+      label.pack(expand=True, fill=BOTH)
 
       return frame
 
    def visitLowerPencil(self, command: LowerPencil):
       super().visitLowerPencil(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
 
       label = Label(frame, text="Baisser le crayon")
-      label.pack()
+      label.pack(expand=True, fill=BOTH)
 
       return frame
 
    def visitOrigin(self, command: Origin):
       super().visitOrigin(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
 
       label = Label(frame, text="Retour au centre")
-      label.pack()
+      label.pack(expand=True, fill=BOTH)
 
       return frame
 
    def visitRestore(self, command: Restore):
       super().visitRestore(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
 
       label = Label(frame, text="Réinitialisation")
-      label.pack()
+      label.pack(expand=True, fill=BOTH)
 
       return frame
 
    def visitClean(self, command: Clean):
       super().visitClean(command)
-      frame = Frame(self.parent, bd=2, relief=RAISED)
+      frame = Frame(self.parent, bd=2, relief=RAISED, cursor="hand2")
 
       label = Label(frame, text="Effacer les traces")
-      label.pack()
+      label.pack(expand=True, fill=BOTH)
 
       return frame
 
