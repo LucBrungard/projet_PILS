@@ -3,6 +3,8 @@ from tkinter import filedialog
 import commands as commands
 import os
 
+from ivybus import MyAgent
+
 
 class Editor:
    def saveFocused(self, item):
@@ -96,11 +98,12 @@ class Editor:
                                    None) else self.lastSelectedFolder
       file = filedialog.asksaveasfile(initialdir=initialDir)
 
-      self.lastSelectedFolder = os.path.dirname(file.name)
+      if file != None:
+         self.lastSelectedFolder = os.path.dirname(file.name)
 
-      for command in self.historicCommands:
-         file.write(command.save(self.visitorSaveXML)+"\n")
-      file.close()
+         for command in self.historicCommands:
+            file.write(command.save(self.visitorSaveXML)+"\n")
+         file.close()
 
    def load(self):
       for widget in self.historicCommandsView:
@@ -115,6 +118,9 @@ class Editor:
           initialdir=initialDir,
           title="Select a File",
           filetypes=[("XML Files", "*.xml*")])
+
+      if (file == None):
+         return
 
       for line in file.readlines():
          # Remove <, >
@@ -156,7 +162,7 @@ class Editor:
 
    def play(self):
       for command in self.historicCommands:
-         print(command.toLogo())
+         self.ivybus.send_msg(command.toLogo())
 
    def __init__(self, master: Toplevel) -> None:
       self.master = master
@@ -166,6 +172,8 @@ class Editor:
       self.focused = None
       self.historicCommandsView = []
       self.historicCommands = []
+
+      self.ivybus = MyAgent("Editor")
 
       self.lastSelectedFolder = None
 

@@ -1,11 +1,9 @@
 from tkinter import *
 from ivybus import *
 from PIL import Image
-from PIL import EpsImagePlugin
-from PIL import ImageGrab
 
 
-class InterfaceV:
+class CanvasTurtle:
    def __init__(self, master, tortue):
       self.fenetre = master
 
