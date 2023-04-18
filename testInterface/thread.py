@@ -67,6 +67,8 @@ class GuiPart:
                 elif x[0] == "FCC" :
                     self.tortue.changerCouleur([int(x[1]), int(x[2]), int(x[3])])
                     self.interfaceT.afficheCommande(msg)
+                elif x[0] == "FCAP" :
+                    self.tortue.fixerCap(int(x[1]))
                 elif x[0] == "QUITTER" :
                     self.end()
                     self.interfaceV.ivybus.stop()
@@ -86,6 +88,7 @@ class GuiPart:
         self.interfaceV.bind_command(self.origine, "ORIGINE")
         self.interfaceV.bind_command(self.fpos, "FPOS (.*) (.*)")
         self.interfaceV.bind_command(self.fcc, "FCC (.*) (.*) (.*)")
+        self.interfaceV.bind_command(self.fcap, "FCAP (.*)")
 
         self.interfaceV.bind_command(self.quitte, "QUITTER")
 
@@ -132,6 +135,10 @@ class GuiPart:
     def fpos(self, agent, x, y) :
         print("Received from ", agent, "FPOS " + x + " " + y)
         self.queue.put("FPOS " + x + " " + y)
+
+    def fcap(self, agent, n) :
+        print("Received from ", agent, "FCAP" + n)
+        self.queue.put("FCAP " + n)
     
     def quitte(self, agent) :
         print("Received from ", agent, "QUITTER")

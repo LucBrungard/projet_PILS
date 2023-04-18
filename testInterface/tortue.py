@@ -22,17 +22,27 @@ class Tortue :
       self.imageAngle = (360 % 360)
 
       self.imageDebut = Image.open("tortue.png")
-      redim_image= self.imageDebut.resize((30,30))
-      self.imageFin= ImageTk.PhotoImage(redim_image)
+      self.majImage()
 
+   def majImage(self) :
+      rotated_image = self.imageDebut.rotate(self.imageAngle, expand=True)
+      redim_image = rotated_image.resize((30,30))
+      self.imageFin = ImageTk.PhotoImage(redim_image)
       self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+   
+   def fixerCap(self, n) : # n dans (-180, 180)
+      self.angle = ((360 - n) % 360)  # en degre
+      self.imageAngle = ((270 + n) % 360)
+
+      self.canvas.delete(self.dessinImage)
+      self.majImage()
 
    def restaurer(self) :
       self.canvas.delete("all")
 
       self.angle = (270 % 360)
       self.imageAngle = (360 % 360)
-      self.coord = [200,200]
+      self.coord = COORD_ORIGINE
       self.trace = True
 
       self.image(self.canvas)
@@ -54,37 +64,39 @@ class Tortue :
       self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
 
    def avancer(self, compteur, n, debut):
-      angle_radian = self.angle * math.pi / 180
+      if n > 0 :
+         angle_radian = self.angle * math.pi / 180
 
-      self.canvas.move(self.dessinImage, self.vitesse * math.cos(angle_radian), self.vitesse * math.sin(angle_radian))
+         self.canvas.move(self.dessinImage, self.vitesse * math.cos(angle_radian), self.vitesse * math.sin(angle_radian))
 
-      ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
+         ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
 
-      if compteur != n :
-         self.canvas.after(30, self.avancer, compteur+1, n, debut)
-         self.coord = self.canvas.coords(self.dessinImage)
+         if compteur != n :
+            self.canvas.after(30, self.avancer, compteur+1, n, debut)
+            self.coord = self.canvas.coords(self.dessinImage)
 
-         if self.trace :
-            self.canvas.coords(ligne, debut[0], debut[1], 
-               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+            if self.trace :
+               self.canvas.coords(ligne, debut[0], debut[1], 
+                  (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
 
-      '''else :      
-         self.canvas.create_line(self.coord[0], self.coord[1], self.coord[0] + 30, self.coord[1] +30)'''
+         '''else :      
+            self.canvas.create_line(self.coord[0], self.coord[1], self.coord[0] + 30, self.coord[1] +30)'''
 
    def reculer(self, compteur, n, debut):
-      angle_radian = self.angle * math.pi / 180
+      if n > 0 :
+         angle_radian = self.angle * math.pi / 180
 
-      self.canvas.move(self.dessinImage, -self.vitesse * math.cos(angle_radian), -self.vitesse * math.sin(angle_radian))
-      
-      ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
-
-      if compteur != n :
-         self.canvas.after(30, self.reculer, compteur+1, n, debut)
-         self.coord = self.canvas.coords(self.dessinImage)
+         self.canvas.move(self.dessinImage, -self.vitesse * math.cos(angle_radian), -self.vitesse * math.sin(angle_radian))
          
-         if self.trace :
-            self.canvas.coords(ligne, debut[0], debut[1], 
-               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+         ligne = self.canvas.create_line(debut[0], debut[1], debut[0], debut[1], fill = self.couleur)
+
+         if compteur != n :
+            self.canvas.after(30, self.reculer, compteur+1, n, debut)
+            self.coord = self.canvas.coords(self.dessinImage)
+            
+            if self.trace :
+               self.canvas.coords(ligne, debut[0], debut[1], 
+                  (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
 
    def tourner(self, n) :
       
@@ -97,10 +109,7 @@ class Tortue :
             self.imageAngle = ((self.imageAngle - 1) % 360)
 
          self.canvas.delete(self.dessinImage)
-         rotated_image = self.imageDebut.rotate(self.imageAngle, expand=True)
-         redim_image = rotated_image.resize((30,30))
-         self.imageFin = ImageTk.PhotoImage(redim_image)
-         self.dessinImage = self.canvas.create_image(self.coord[0],self.coord[1], anchor=NW, image=self.imageFin)
+         self.majImage()
          
          if n > 0 :
             self.canvas.after(30, self.tourner, n-1)

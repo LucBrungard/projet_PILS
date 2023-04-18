@@ -58,6 +58,9 @@ class InterfaceC :
         quit_btn = Button(self.fenetre, text = 'QUITTER', command=self.quitter)
         quit_btn.grid(column=2, row=7)
 
+        act_btn = Button(self.fenetre, text = 'FCAP', command=lambda:self.ivybus.send_msg("FCAP " + saisi.get()))
+        act_btn.grid(column=2, row=8)
+
     def quitter(self) :
         self.fenetre.destroy()
         self.ivybus.send_msg("QUITTER")
