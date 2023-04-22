@@ -14,6 +14,7 @@ class Main:
 
       # La fenêtre de gestion des différentes parties du logiciel
       self.master = Tk()
+      self.master.protocol("WM_DELETE_WINDOW", self.endApplication)
 
       self.queue = Queue()
 
@@ -47,7 +48,7 @@ class Main:
       if not self.running:
          import sys
          sys.exit(1)
-      self.master.after(100, self.periodicCall)
+      self.after = self.master.after(100, self.periodicCall)
 
    def createGV(self):
       self.graphicalVisualizer = None
@@ -92,6 +93,8 @@ class Main:
 
    def closeWindow(self, btn: Button, window: Toplevel, itemName):
       btn.configure(bg="red")
+      if (itemName == "editor"):
+         self.editor.ivybus.stop()
       setattr(self, itemName, None)
       window.destroy()
 
@@ -120,6 +123,9 @@ class Main:
          btn.configure(background='green')
 
    def endApplication(self):
+      self.ivybus.stop()
+      if (self.editor != None):
+         self.editor.ivybus.stop()
       self.running = 0
 
    def registerBindings(self):
