@@ -6,132 +6,149 @@ COORDS_ORIGIN = [300, 300]
 
 
 class Tortue:
-   def __init__(self):
-      self.angle = (270 % 360)  # en degre
+    def __init__(self):
+        self.angle = (270 % 360)  # en degre
 
-      self.vitesse = 1
-      self.trace = True
-      self.coord = COORDS_ORIGIN
-      self.changerCouleur([0, 0, 0])  # noir
+        self.vitesse = 1
+        self.trace = True
+        self.coord = COORDS_ORIGIN
+        self.changerCouleur([0, 0, 0])  # noir
 
-    #   image = Image.open("tortue.png")
-    #   self.image = ImageTk.PhotoImage(image.resize((30, 30)))
+        self.running = False
 
-   def image(self, canvas: Canvas):
-      self.canvas = canvas
+      #   image = Image.open("tortue.png")
+      #   self.image = ImageTk.PhotoImage(image.resize((30, 30)))
 
-      self.imageAngle = (360 % 360)
+    def image(self, canvas: Canvas):
+        self.canvas = canvas
 
-      self.imageDebut = Image.open("tortue.png")
-      redim_image = self.imageDebut.resize((30, 30))
-      self.imageFin = ImageTk.PhotoImage(redim_image)
+        self.imageAngle = (360 % 360)
 
-      self.dessinImage = self.canvas.create_image(
-          self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+        self.imageDebut = Image.open("tortue.png")
+        self.majImage()
 
-   def restaurer(self):
-      self.canvas.delete("all")
+    def majImage(self):
+        rotated_image = self.imageDebut.rotate(self.imageAngle, expand=True)
+        redim_image = rotated_image.resize((30, 30))
+        self.imageFin = ImageTk.PhotoImage(redim_image)
+        self.dessinImage = self.canvas.create_image(
+            self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
 
-      self.angle = (270 % 360)
-      self.imageAngle = (360 % 360)
-      self.coord = [200, 200]
-      self.trace = True
+    def restaurer(self):
+        self.canvas.delete("all")
 
-      self.image(self.canvas)
+        self.angle = (270 % 360)
+        self.imageAngle = (360 % 360)
+        self.coord = COORDS_ORIGIN
+        self.trace = True
 
-   def nettoyer(self):
-      self.canvas.delete("all")
-      self.dessinImage = self.canvas.create_image(
-          self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+        self.image(self.canvas)
 
-   def origine(self):
-      self.canvas.delete(self.dessinImage)
+    def nettoyer(self):
+        self.canvas.delete("all")
+        self.dessinImage = self.canvas.create_image(
+            self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
 
-      redim_image = self.imageDebut.resize((30, 30))
-      self.imageFin = ImageTk.PhotoImage(redim_image)
+    def origine(self):
+        self.canvas.delete(self.dessinImage)
 
-      self.angle = (270 % 360)
-      self.imageAngle = (360 % 360)
-      self.coord = COORDS_ORIGIN
+        redim_image = self.imageDebut.resize((30, 30))
+        self.imageFin = ImageTk.PhotoImage(redim_image)
 
-      self.dessinImage = self.canvas.create_image(
-          self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+        self.angle = (270 % 360)
+        self.imageAngle = (360 % 360)
+        self.coord = COORDS_ORIGIN
 
-   def avancer(self, compteur, n, debut):
-      angle_radian = self.angle * math.pi / 180
+        self.dessinImage = self.canvas.create_image(
+            self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
 
-      self.canvas.move(self.dessinImage, self.vitesse *
-                       math.cos(angle_radian), self.vitesse * math.sin(angle_radian))
+    def avancer(self, compteur, n, debut):
+        self.running = True
 
-      ligne = self.canvas.create_line(
-          debut[0], debut[1], debut[0], debut[1], fill=self.couleur)
+        angle_radian = self.angle * math.pi / 180
 
-      if compteur != n:
-         self.canvas.after(30, self.avancer, compteur+1, n, debut)
-         self.coord = self.canvas.coords(self.dessinImage)
+        self.canvas.move(self.dessinImage, self.vitesse *
+                         math.cos(angle_radian), self.vitesse * math.sin(angle_radian))
 
-         if self.trace:
-            self.canvas.coords(ligne, debut[0], debut[1],
-                               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+        ligne = self.canvas.create_line(
+            debut[0], debut[1], debut[0], debut[1], fill=self.couleur)
 
-      '''else :      
-         self.canvas.create_line(self.coord[0], self.coord[1], self.coord[0] + 30, self.coord[1] +30)'''
+        if compteur != n:
+            self.canvas.after(30, self.avancer, compteur+1, n, debut)
+            self.coord = self.canvas.coords(self.dessinImage)
 
-   def reculer(self, compteur, n, debut):
-      angle_radian = self.angle * math.pi / 180
+            if self.trace:
+                self.canvas.coords(ligne, debut[0], debut[1],
+                                   (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
 
-      self.canvas.move(self.dessinImage, -self.vitesse *
-                       math.cos(angle_radian), -self.vitesse * math.sin(angle_radian))
+        else:
+            self.running = False
 
-      ligne = self.canvas.create_line(
-          debut[0], debut[1], debut[0], debut[1], fill=self.couleur)
+    def reculer(self, compteur, n, debut):
+        self.running = True
 
-      if compteur != n:
-         self.canvas.after(30, self.reculer, compteur+1, n, debut)
-         self.coord = self.canvas.coords(self.dessinImage)
+        angle_radian = self.angle * math.pi / 180
 
-         if self.trace:
-            self.canvas.coords(ligne, debut[0], debut[1],
-                               (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+        self.canvas.move(self.dessinImage, -self.vitesse *
+                         math.cos(angle_radian), -self.vitesse * math.sin(angle_radian))
 
-   def tourner(self, n):
+        ligne = self.canvas.create_line(
+            debut[0], debut[1], debut[0], debut[1], fill=self.couleur)
 
-      if n != 0:
-         if (-n) > 0:
-            self.angle = ((self.angle - 1) % 360)
-            self.imageAngle = ((self.imageAngle + 1) % 360)
-         else:
-            self.angle = ((self.angle + 1) % 360)
-            self.imageAngle = ((self.imageAngle - 1) % 360)
+        if compteur != n:
+            self.canvas.after(30, self.reculer, compteur+1, n, debut)
+            self.coord = self.canvas.coords(self.dessinImage)
 
-         self.canvas.delete(self.dessinImage)
-         rotated_image = self.imageDebut.rotate(self.imageAngle, expand=True)
-         redim_image = rotated_image.resize((30, 30))
-         self.imageFin = ImageTk.PhotoImage(redim_image)
-         self.dessinImage = self.canvas.create_image(
-             self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+            if self.trace:
+                self.canvas.coords(ligne, debut[0], debut[1],
+                                   (self.coord[0] + (self.coord[0] + 30)) / 2, (self.coord[1] + (self.coord[1] + 30)) / 2)
+        else:
+            self.running = False
 
-         if n > 0:
-            self.canvas.after(30, self.tourner, n-1)
-         else:
-            self.canvas.after(30, self.tourner, n+1)
+    def tourner(self, n):
+        self.running = True
 
-   def leverCrayon(self):
-      self.trace = False
+        if n != 0:
+            if (-n) > 0:
+                self.angle = ((self.angle - 1) % 360)
+                self.imageAngle = ((self.imageAngle + 1) % 360)
+            else:
+                self.angle = ((self.angle + 1) % 360)
+                self.imageAngle = ((self.imageAngle - 1) % 360)
 
-   def baisserCrayon(self):
-      self.trace = True
+            self.canvas.delete(self.dessinImage)
+            self.majImage()
 
-   def changerCouleur(self, rgb):
-      try:
-         r, g, b = rgb[0], rgb[1], rgb[2]
-      except:
-         print("Pas assez d'arguments")
+            if n > 0:
+                self.canvas.after(30, self.tourner, n-1)
+            else:
+                self.canvas.after(30, self.tourner, n+1)
+        else:
+            self.running = False
 
-      self.couleur = f'#{r:02x}{g:02x}{b:02x}'
+    def leverCrayon(self):
+        self.trace = False
 
-   def fixerPos(self, coord):
-      self.canvas.delete(self.dessinImage)
-      self.coord = coord
-      self.dessinImage = self.canvas.create_image(
-          self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+    def baisserCrayon(self):
+        self.trace = True
+
+    def changerCouleur(self, rgb):
+        try:
+            r, g, b = rgb[0], rgb[1], rgb[2]
+        except:
+            print("Pas assez d'arguments")
+
+        self.couleur = f'#{r:02x}{g:02x}{b:02x}'
+
+    def fixerPos(self, coord):
+        self.canvas.delete(self.dessinImage)
+        self.coord = coord
+        self.dessinImage = self.canvas.create_image(
+            self.coord[0], self.coord[1], anchor=NW, image=self.imageFin)
+
+    def fixerCap(self, n):  # n dans (-180, 180)
+        self.angle = ((360 - n) % 360)  # en degre
+        self.imageAngle = ((270 + n) % 360)
+
+        self.canvas.delete(self.dessinImage)
+        self.majImage()
