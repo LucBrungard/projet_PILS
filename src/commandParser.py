@@ -2,8 +2,66 @@ from commands import *
 from io import FileIO
 
 
-def parseCommandXML(commandStr: str) -> Command:
+def parseCommandCLI(commandStr: str) -> Command:
     chunks = commandStr.split()
+
+    if chunks[0] == "avancer":
+        value = chunks[1]
+        return Forward(value)
+
+    if chunks[0] == "reculer":
+        value = chunks[1]
+        return Backward(value)
+
+    if chunks[0] == "droite":
+        value = chunks[1]
+        return TurnRight(value)
+
+    if chunks[0] == "gauche":
+        value = chunks[1]
+        return TurnLeft(value)
+
+    if chunks[0] == "lever":
+        return LiftPencil()
+
+    if chunks[0] == "baisser":
+        return LowerPencil()
+
+    if chunks[0] == "origine":
+        return Origin()
+
+    if chunks[0] == "nettoyer":
+        return Clean()
+
+    if chunks[0] == "restaurer":
+        return Restore()
+
+    if chunks[0] == "crayon":
+        value = [
+            chunks[1],
+            chunks[2],
+            chunks[3],
+        ]
+        return FCC(value)
+
+    if chunks[0] == "cap":
+        value = chunks[1]
+        return FCAP(value)
+
+    if chunks[0] == "position":
+        value = [
+            chunks[1],
+            chunks[2],
+        ]
+        return FPOS(value)
+
+    return None
+
+
+def parseCommandXML(commandStr: str) -> Command:
+    print("commandStr : ", commandStr)
+    chunks = commandStr.split()
+    print("chunks : ", chunks)
 
     if chunks[0] == "avancer":
         value = chunks[1][5:]
