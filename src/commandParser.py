@@ -63,13 +63,13 @@ def parseCommandXML(commandStr: str) -> Command:
 def parseLines(fileLines):
     listCommands = []
     while len(fileLines) > 0:
-        line = fileLines.pop(0)
+        line = fileLines.pop(0).strip()
 
-        if line == "</repeter>\n":
+        if line == "</repeter>":
             return listCommands
 
         # Remove <, >, \n
-        line = line[1 : len(line) - 2]
+        line = line[1 : len(line) - 1]
 
         command = parseCommandXML(line)
         listCommands.append(command)
