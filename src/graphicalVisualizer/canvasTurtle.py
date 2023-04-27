@@ -9,9 +9,6 @@ class CanvasTurtle:
 
         self.option()
 
-    def bind_command(self, action, command):
-        self.ivybus.bind_msg(action, command)
-
     def option(self):
         save_btn = Button(
             self.fenetre, text="SAUVEGARDER IMAGE", command=self.sauvegarderCanvas
